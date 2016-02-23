@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+        <title>Backbone.js Form</title>
+</head>
+
+<body>
+
+    <div id="backbone-form">
+        <form id="registration" name="registration" method='GET'>
+            <div id="fieldlist">
+            </div>
+        </form>
+    </div>
+
+
+    <script src="./vendor/json2.js"></script>
+    <script src="./vendor/jquery-1.11.3.js"></script>
+    <script src="./vendor/underscore.js"></script>
+    <script src="./vendor/backbone.js"></script>
+    <script src="app.js"></script>
+
+
+    <!-- Templates -->
+
+    <script type="text/template" id="tpl-input-text">
+        <label><%- name %></label>
+        <input type="text" id="id_<%- name %>" value="" />
+    </script>
+
+    <script type="text/template" id="tpl-input-checkbox">
+        <label><%- name %></label>
+        <input type="checkbox" id="id_<%- name %>" />
+    </script>
+
+
+</body>
+
+</html>
