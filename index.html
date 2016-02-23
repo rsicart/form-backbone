@@ -3,19 +3,23 @@
 
 <head>
     <meta charset="utf-8">
-        <title>Backbone.js Form</title>
+    <title>Backbone.js Form</title>
 </head>
 
 <body>
 
     <div id="backbone-form">
         <form id="registration" name="registration" method='GET'>
-            <div id="fieldlist">
+            <div id="step1">
+            </div>
+            <div id="step2">
             </div>
         </form>
     </div>
 
 
+
+    <link rel="stylesheet" type="text/css" href="./css/main.css" />
     <script src="./vendor/json2.js"></script>
     <script src="./vendor/jquery-1.11.3.js"></script>
     <script src="./vendor/underscore.js"></script>
@@ -33,6 +37,10 @@
     <script type="text/template" id="tpl-input-checkbox">
         <label><%- name %></label>
         <input type="checkbox" id="id_<%- name %>" />
+    </script>
+
+    <script type="text/template" id="tpl-input-button">
+        <input type="button" id="id_<%- name %>" value="<%- value %>" />
     </script>
 
 

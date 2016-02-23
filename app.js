@@ -72,6 +72,36 @@ var FieldCheckboxView = FieldView.extend({
     },
 });
 
+var FieldButtonNextView = FieldView.extend({
+    template: _.template($('#tpl-input-button').html()),
+    getInput: function () {
+        return this.$el.children('input[type="button"]')
+    },
+    // override events
+    events: {
+        "click": "goToNext",
+    },
+    goToNext: function () {
+        console.log("Go to Next");
+	this.trigger('next');
+    },
+});
+
+var FieldButtonPreviousView = FieldView.extend({
+    template: _.template($('#tpl-input-button').html()),
+    getInput: function () {
+        return this.$el.children('input[type="button"]')
+    },
+    // override events
+    events: {
+        "click": "goToPrevious",
+    },
+    goToPrevious: function () {
+        console.log("Go to Previous");
+	this.trigger('previous');
+    },
+});
+
 // setup form field instances
 var nameField = new Field();
 nameField.set('id', 'id_name');
@@ -97,10 +127,28 @@ vatField.set('name', 'vat');
 vatField.set('type', 'text');
 vatField.set('validation', /[\w]+/);
 
+var nextButtonStep1 = new Field();
+nextButtonStep1.set('id', 'id_next_step1');
+nextButtonStep1.set('name', 'next_step1');
+nextButtonStep1.set('type', 'button');
+nextButtonStep1.set('value', 'Next');
+
+var addressField = new Field();
+addressField.set('id', 'id_address');
+addressField.set('name', 'address');
+addressField.set('type', 'text');
+addressField.set('validation', /[\w]+/);
+
+var previousButtonStep2 = new Field();
+previousButtonStep2.set('id', 'id_previous_step2');
+previousButtonStep2.set('name', 'previous_step2');
+previousButtonStep2.set('type', 'button');
+previousButtonStep2.set('value', 'Previous');
+
 
 // setup app view
-var AppView = Backbone.View.extend({
-    el: $("#backbone-form"),
+var Step1View = Backbone.View.extend({
+    el: $("#step1"),
     fieldViews: {},
     initialize: function() {
         this.fieldViews['name'] = new FieldTextView({id: nameField.get('name'), model: nameField});
@@ -108,6 +156,7 @@ var AppView = Backbone.View.extend({
         this.fieldViews['isPro'] = new FieldCheckboxView({id: isProField.get('name'), model: isProField});
         this.fieldViews['vat'] = new FieldTextView({id: vatField.get('name'), model: vatField});
         this.fieldViews['vat'].$el.hide();
+        this.fieldViews['next'] = new FieldButtonNextView({id: nextButtonStep1.get('name'), model: nextButtonStep1});
         // listen to events
         this.listenTo(isProField, 'change', function(){
             if (this.fieldViews['isPro'].model.get('value') === false) {
@@ -118,13 +167,54 @@ var AppView = Backbone.View.extend({
                 this.fieldViews['vat'].$el.show();
             }
         });
-        this.render(); 
+        this.render();
     },
     render: function() {
-        this.$('#fieldlist').append(this.fieldViews['name'].render().el);
-        this.$('#fieldlist').append(this.fieldViews['email'].render().el);
-        this.$('#fieldlist').append(this.fieldViews['isPro'].render().el);
-        this.$('#fieldlist').append(this.fieldViews['vat'].render().el);
+        this.$el.append(this.fieldViews['name'].render().el);
+        this.$el.append(this.fieldViews['email'].render().el);
+        this.$el.append(this.fieldViews['isPro'].render().el);
+        this.$el.append(this.fieldViews['vat'].render().el);
+        this.$el.append(this.fieldViews['next'].render().el);
+        return this;
+    },
+});
+
+var Step2View = Backbone.View.extend({
+    el: $("#step2"),
+    fieldViews: {},
+    initialize: function() {
+        this.fieldViews['address'] = new FieldTextView({id: addressField.get('name'), model: addressField});
+        this.fieldViews['previous'] = new FieldButtonPreviousView({id: previousButtonStep2.get('name'), model: previousButtonStep2});
+        this.render();
+    },
+    render: function() {
+        this.$el.append(this.fieldViews['address'].render().el);
+        this.$el.append(this.fieldViews['previous'].render().el);
+        return this;
+    },
+});
+
+var AppView = Backbone.View.extend({
+    el: $("#backbone-form"),
+    views: {},
+    initialize: function() {
+        this.views['step1'] = new Step1View;
+        this.views['step2'] = new Step2View;
+        this.views['step2'].$el.hide();
+        // listen to events
+        this.listenTo(this.views['step1']['fieldViews']['next'], 'next', function(){
+            this.views['step1'].$el.hide();
+            this.views['step2'].$el.show();
+        });
+        this.listenTo(this.views['step2']['fieldViews']['previous'], 'previous', function(){
+            this.views['step2'].$el.hide();
+            this.views['step1'].$el.show();
+        });
+        this.render();
+    },
+    render: function() {
+        this.views['step1'].$el.append(this.views['step1'].render().el);
+        this.views['step2'].$el.append(this.views['step2'].render().el);
     },
 });
 
