@@ -1,5 +1,6 @@
 $(function() {
 
+// base model
 var Field = Backbone.Model.extend({
     defaults: function(){
         return {
@@ -16,98 +17,23 @@ var Field = Backbone.Model.extend({
     },
 });
 
-// Base View class
-var FieldView = Backbone.View.extend({
-    tagName: 'div',
-    render: function(){
-        this.$el.html(this.template(this.model.toJSON()));
-        return this;
-    },
-    events: {
-        "change": "updateValue",
-    },
-    getInput: function () {
-        console.error('Not implemented!');
-    },
-    updateValue: function () {
-        console.error('Not implemented!');
-    },
-    enable: function () {
-        this.getInput().prop("disabled", false);
-    },
-    disable: function () {
-        this.getInput().prop("disabled", true);
-    },
-});
+// setup model instances
+var seats = [
+    {'id': 1, 'name': '1',},
+    {'id': 2, 'name': '2',},
+    {'id': 3, 'name': '3',},
+    {'id': 4, 'name': '4',},
+];
+var stops = [
+    {'id': 60, 'name': '1 hour',},
+    {'id': 120, 'name': '2 hours',},
+];
 
-var FieldTextView = FieldView.extend({
-    template: _.template($('#tpl-input-text').html()),
-    getInput: function () {
-        return this.$el.children('input[type="text"]')
-    },
-    updateValue: function () {
-        var value = this.getInput().val();
-        this.model.set('value', value);
-        if (!this.model.isValid()) {
-            console.log(this.model.get('name') + ' contains invalid value: ' + this.model.get('value'));
-            this.$el.addClass('error');
-        } else {
-            this.$el.removeClass('error');
-        }
-        return this.model.isValid();
-    },
-});
+var cities = [
+    {'id': 1, 'name': 'Paris',},
+    {'id': 2, 'name': 'Marseille',},
+];
 
-var FieldCheckboxView = FieldView.extend({
-    template: _.template($('#tpl-input-checkbox').html()),
-    getInput: function () {
-        return this.$el.children('input[type="checkbox"]')
-    },
-    updateValue: function () {
-        var value = this.getInput().is(':checked');
-        this.model.set('value', value);
-        if (!this.model.isValid()) {
-            console.log(this.model.get('name') + ' contains invalid value: ' + this.model.get('value'));
-        }
-        return this.model.isValid();
-    },
-});
-
-var FieldSelectView = FieldView.extend({
-    template: _.template($('#tpl-input-select').html()),
-    getInput: function () {
-        return this.$el.children('select')
-    },
-    updateValue: function () {
-        var value = this.getInput().val();
-        this.model.set('value', value);
-        if (!this.model.isValid()) {
-            console.log(this.model.get('name') + ' contains invalid value: ' + this.model.get('value'));
-            this.$el.addClass('error');
-        } else {
-            this.$el.removeClass('error');
-        }
-        return this.model.isValid();
-    },
-});
-
-var FieldButtonView = FieldView.extend({
-    template: _.template($('#tpl-input-button').html()),
-    getInput: function () {
-        return this.$el.children('input[type="button"]')
-    },
-    // override events
-    events: {
-        "click": "goToNext",
-    },
-    goToNext: function () {
-        console.log("Go to Next");
-	this.trigger('next');
-    },
-});
-
-
-// setup form field instances
 var addressFromField = new Field();
 addressFromField.set('id', 'id_address_from');
 addressFromField.set('name', 'address_from');
@@ -137,22 +63,6 @@ tripReferenceField.set('id', 'id_trip_reference');
 tripReferenceField.set('name', 'id_trip_reference');
 tripReferenceField.set('type', 'checkbox');
 tripReferenceField.set('validation', /[\w]+/);
-
-var seats = [
-    {'id': 1, 'name': '1',},
-    {'id': 2, 'name': '2',},
-    {'id': 3, 'name': '3',},
-    {'id': 4, 'name': '4',},
-];
-var stops = [
-    {'id': 60, 'name': '1 hour',},
-    {'id': 120, 'name': '2 hours',},
-];
-
-var cities = [
-    {'id': 1, 'name': 'Paris',},
-    {'id': 2, 'name': 'Marseille',},
-];
 
 var extraSeatField = new Field();
 extraSeatField.set('id', 'id_extra_seat');
@@ -214,9 +124,147 @@ pointsButton.set('name', 'points_button');
 pointsButton.set('type', 'button');
 pointsButton.set('value', 'Submit');
 
+var addSeatButton = new Field();
+addSeatButton.set('id', 'id_add_seat_button');
+addSeatButton.set('name', 'add_seat_button');
+addSeatButton.set('type', 'button');
+addSeatButton.set('value', 'Add Seat');
 
-// setup app view
-//
+var removeSeatButton = new Field();
+removeSeatButton.set('id', 'id_remove_seat_button');
+removeSeatButton.set('name', 'remove_seat_button');
+removeSeatButton.set('type', 'button');
+removeSeatButton.set('value', 'Remove Seat');
+
+// base View
+var FieldView = Backbone.View.extend({
+    tagName: 'div',
+    render: function(){
+        this.$el.html(this.template(this.model.toJSON()));
+        return this;
+    },
+    events: {
+        "change": "updateValue",
+    },
+    getInput: function () {
+        console.error('Not implemented!');
+    },
+    updateValue: function () {
+        console.error('Not implemented!');
+    },
+    enable: function () {
+        this.getInput().prop("disabled", false);
+    },
+    disable: function () {
+        this.getInput().prop("disabled", true);
+    },
+});
+
+// extended base Views
+var FieldTextView = FieldView.extend({
+    template: _.template($('#tpl-input-text').html()),
+    getInput: function () {
+        return this.$el.find('input[type="text"]')
+    },
+    updateValue: function () {
+        var value = this.getInput().val();
+        this.model.set('value', value);
+        if (!this.model.isValid()) {
+            console.log(this.model.get('name') + ' contains invalid value: ' + this.model.get('value'));
+            this.$el.addClass('error');
+        } else {
+            this.$el.removeClass('error');
+        }
+        return this.model.isValid();
+    },
+});
+
+var FieldCheckboxView = FieldView.extend({
+    template: _.template($('#tpl-input-checkbox').html()),
+    getInput: function () {
+        return this.$el.find('input[type="checkbox"]')
+    },
+    updateValue: function () {
+        var value = this.getInput().is(':checked');
+        this.model.set('value', value);
+        if (!this.model.isValid()) {
+            console.log(this.model.get('name') + ' contains invalid value: ' + this.model.get('value'));
+        }
+        return this.model.isValid();
+    },
+});
+
+var FieldSelectView = FieldView.extend({
+    template: _.template($('#tpl-input-select').html()),
+    getInput: function () {
+        return this.$el.find('select')
+    },
+    updateValue: function () {
+        var value = this.getInput().val();
+        this.model.set('value', value);
+        if (!this.model.isValid()) {
+            console.log(this.model.get('name') + ' contains invalid value: ' + this.model.get('value'));
+            this.$el.addClass('error');
+        } else {
+            this.$el.removeClass('error');
+        }
+        return this.model.isValid();
+    },
+});
+
+var FieldButtonView = FieldView.extend({
+    template: _.template($('#tpl-input-button').html()),
+    getInput: function () {
+        return this.$el.find('input[type="button"]')
+    },
+    // override events
+    events: {
+        "click": "goToNext",
+    },
+    goToNext: function () {
+        console.log("Go to Next");
+	this.trigger('next');
+    },
+});
+
+var FieldButtonSubmitView = FieldButtonView.extend({
+    // override events
+    events: {
+        "click": "submit",
+    },
+    submit: function () {
+        this.$el.closest('form').submit();
+    },
+});
+
+var FieldButtonAddSeatView = FieldButtonView.extend({
+    // override events
+    events: {
+        "click": "addSeat",
+    },
+    addSeat: function () {
+        this.trigger('addSeat');
+    },
+});
+
+var FieldButtonRemoveSeatView = FieldButtonView.extend({
+    // override events
+    events: {
+        "click": "removeSeat",
+    },
+    removeSeat: function () {
+        this.trigger('removeSeat');
+    },
+});
+
+var FieldSelectSeatView = FieldSelectView.extend({
+    template: _.template($('#tpl-input-select-seats').html()),
+});
+
+
+/*
+ * App views
+ */
 
 // Row
 var AddressView = Backbone.View.extend({
@@ -261,12 +309,40 @@ var OutboundExtraSeatsView = Backbone.View.extend({
     el: $("#step3-points-outbound-seats"),
     fieldViews: {},
     initialize: function() {
-        this.fieldViews['extraSeat'] = new FieldSelectView({id: extraSeatField.get('name'), model: extraSeatField, el: $("#points-extra-seat")});
+        this.fieldViews['addSeatButton'] = new FieldButtonAddSeatView({id: addSeatButton.get('name'), model: addSeatButton, el: $("#points-add-seat-outbound")});
+        this.fieldViews['removeSeatButton'] = new FieldButtonRemoveSeatView({id: removeSeatButton.get('name'), model: removeSeatButton, el: $("#points-remove-seat-outbound")});
+        this.fieldViews['extraSeats'] = [];
+        this.listenTo(this.fieldViews['addSeatButton'], 'addSeat', function(){
+            this.addSeat();
+        });
+        this.listenTo(this.fieldViews['removeSeatButton'], 'removeSeat', function(){
+            this.removeSeat();
+        });
         this.render();
     },
     render: function() {
-        this.fieldViews['extraSeat'].render();
+        this.$el.find('input').remove();
+        this.$el.find('select').remove();
+        for (var s in this.fieldViews['extraSeats']) {
+            this.$el.append(this.fieldViews['extraSeats'][s].render().el);
+        }
+        this.fieldViews['addSeatButton'].render();
+        this.fieldViews['removeSeatButton'].render();
         return this;
+    },
+    addSeat: function() {
+        if (this.fieldViews['extraSeats'].length > 3)
+            return this;
+        this.fieldViews['extraSeats'].push(new FieldSelectSeatView({id: extraSeatField.get('name'), model: extraSeatField, template: _.template($('#tpl-input-select-seats').html())}));
+        this.render();
+    },
+    removeSeat: function() {
+        if (this.fieldViews['extraSeats'].length < 2)
+            return this;
+        console.log('remove seat');
+        var view = this.fieldViews['extraSeats'].pop();
+        view.remove();
+        this.render();
     },
 });
 
@@ -326,7 +402,7 @@ var PointsView = Backbone.View.extend({
         this.fieldViews['extraStops'] = new OutboundExtraStopsView,
         this.fieldViews['inbound'] = new InboundView,
 
-        this.fieldViews['pointsButton'] = new FieldButtonView({id: pointsButton.get('name'), model: pointsButton});
+        this.fieldViews['pointsButton'] = new FieldButtonSubmitView({id: pointsButton.get('name'), model: pointsButton});
         // listen to events
         this.listenTo(isRoundtripField, 'change', function(){
             console.log('roundtrip');
@@ -346,7 +422,7 @@ var PointsView = Backbone.View.extend({
         this.fieldViews['extraSeats'].render();
         this.fieldViews['extraStops'].render();
         this.fieldViews['inbound'].render();
-        this.fieldViews['pointsButton'].render();
+        this.$el.append(this.fieldViews['pointsButton'].render().el);
         // initially disabled
         this.fieldViews['inbound'].disable();
         this.fieldViews['inbound'].$el.hide();

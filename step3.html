@@ -13,9 +13,9 @@
                     <div id="step3-points">
                         <!-- Address -->
                         <div id="step3-points-address" class="row" style="background-color: gray;">
-                                <div id="points-address-from" class="col-xs-6">
+                                <div id="points-address-from" class="col-xs-5">
                                 </div>
-                                <div id="points-address-to" class="col-xs-6">
+                                <div id="points-address-to" class="col-xs-5">
                                 </div>
                         </div>
                         <!-- Outbound -->
@@ -29,7 +29,9 @@
                         </div>
                         <!-- Outbound Extra Seats -->
                         <div id="step3-points-outbound-seats" class="row" style="background-color: green;">
-                            <div id="points-extra-seat" class="col-xs-5">
+                            <div id="points-add-seat-outbound" class="col-xs-1">
+                            </div>
+                            <div id="points-remove-seat-outbound" class="col-xs-1">
                             </div>
                         </div>
                         <!-- Outbound Extra Stops -->
@@ -42,17 +44,17 @@
 
                         <!-- Inbound -->
                         <div id="step3-points-inbound">
-                            <div class="row">
+                            <div class="row" style="background-color: purple;">
                                 <div id="points-time-return" class="col-xs-5">
                                 </div>
                                 <div id="points-trip-reference-return" class="col-xs-5">
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" style="background-color: purple;">
                                 <div id="points-extra-seat-return" class="col-xs-5">
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" style="background-color: purple;">
                                 <div id="points-extra-stop-return" class="col-xs-5">
                                 </div>
                                 <div id="points-extra-stop-location-return" class="col-xs-5">
@@ -112,6 +114,17 @@
             <input type="button" id="id_<%- name %>" value="<%- value %>" class="form-control btn" />
     </script>
 
+    <script type="text/template" id="tpl-input-select-seats">
+        <div class="col-xs-2">
+            <label><%- name %></label><br/>
+            <select id="id_<%- name %>" class="form-control">
+                <option value="">---</option>
+                <% _.each(options, function(option) { %>
+                <option value="<%- option.id %>"><%- option.name %></option>
+                <% }); %>
+            </select>
+        </div>
+    </script>
 
 </body>
 
