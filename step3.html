@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Backbone.js Form Step 3</title>
+</head>
+
+<body>
+
+    <div id="backbone-form-step3" class="container">
+                <form id="form-points" name="form-points" method='GET' action="./step4.html">
+                    <div id="step3-points">
+                        <!-- Address -->
+                        <div id="step3-points-address" class="row" style="background-color: gray;">
+                                <div id="points-address-from" class="col-xs-6">
+                                </div>
+                                <div id="points-address-to" class="col-xs-6">
+                                </div>
+                        </div>
+                        <!-- Outbound -->
+                        <div id="step3-points-outbound" class="row" style="background-color: green;">
+                            <div id="points-time" class="col-xs-5">
+                            </div>
+                            <div id="points-trip-reference" class="col-xs-5">
+                            </div>
+                            <div id="points-is-roundtrip" class="col-xs-2">
+                            </div>
+                        </div>
+                        <!-- Outbound Extra Seats -->
+                        <div id="step3-points-outbound-seats" class="row" style="background-color: green;">
+                            <div id="points-extra-seat" class="col-xs-5">
+                            </div>
+                        </div>
+                        <!-- Outbound Extra Stops -->
+                        <div id="step3-points-outbound-stops" class="row" style="background-color: green;">
+                            <div id="points-extra-stop" class="col-xs-5">
+                            </div>
+                            <div id="points-extra-stop-location" class="col-xs-5">
+                            </div>
+                        </div>
+
+                        <!-- Inbound -->
+                        <div id="step3-points-inbound">
+                            <div class="row">
+                                <div id="points-time-return" class="col-xs-5">
+                                </div>
+                                <div id="points-trip-reference-return" class="col-xs-5">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="points-extra-seat-return" class="col-xs-5">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="points-extra-stop-return" class="col-xs-5">
+                                </div>
+                                <div id="points-extra-stop-location-return" class="col-xs-5">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+        </div>
+    </div>
+
+
+
+    <link rel="stylesheet" type="text/css" href="./css/main.css" />
+    <script src="./vendor/json2.js"></script>
+    <script src="./vendor/jquery-1.11.3.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <script src="./vendor/underscore.js"></script>
+    <script src="./vendor/backbone.js"></script>
+    <script src="step3.js"></script>
+
+
+    <!-- Templates -->
+
+    <script type="text/template" id="tpl-input-text">
+            <label><%- name %></label><br/>
+            <input type="text" id="id_<%- name %>" value="" class="form-control" />
+    </script>
+
+    <script type="text/template" id="tpl-input-datepicker">
+            <label><%- name %></label><br/>
+            <input type="text" id="id_<%- name %>" class="form-control" />
+    </script>
+
+    <script type="text/template" id="tpl-input-checkbox">
+            <label><%- name %></label><br/>
+            <input type="checkbox" id="id_<%- name %>" name="id_<%- name %>" class="form-control" /><br/>
+    </script>
+
+    <script type="text/template" id="tpl-input-select">
+            <label><%- name %></label><br/>
+            <select id="id_<%- name %>" class="form-control">
+                <option value="">---</option>
+                <% _.each(options, function(option) { %>
+                <option value="<%- option.id %>"><%- option.name %></option>
+                <% }); %>
+            </select>
+    </script>
+
+    <script type="text/template" id="tpl-input-button">
+            <br/>
+            <input type="button" id="id_<%- name %>" value="<%- value %>" class="form-control btn" />
+    </script>
+
+
+</body>
+
+</html>

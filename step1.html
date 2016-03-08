@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Backbone.js Form Step 1</title>
+</head>
+
+<body>
+
+    <div id="backbone-form-step1" class="container">
+        <div class="row">
+            <div class="col-xs-6">
+                <form id="form-points" name="form-points" method='GET' action="./step2.html">
+                    <div id="step1-points">
+                    </div>
+                </form>
+            </div>
+            <div class="col-xs-6">
+                <form id="form-exclusive" name="form-exclusive" method='GET' action="./step2.html">
+                    <div id="step1-exclusive">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <link rel="stylesheet" type="text/css" href="./css/main.css" />
+    <script src="./vendor/json2.js"></script>
+    <script src="./vendor/jquery-1.11.3.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <script src="./vendor/underscore.js"></script>
+    <script src="./vendor/backbone.js"></script>
+    <script src="step1.js"></script>
+
+    <!-- Templates -->
+
+    <script type="text/template" id="tpl-input-select">
+            <label><%- name %></label><br/>
+            <select id="id_<%- name %>">
+                <option value="">---</option>
+                <% _.each(options, function(option) { %>
+                <option value="<%- option.id %>"><%- option.name %></option>
+                <% }); %>
+            </select>
+    </script>
+
+    <script type="text/template" id="tpl-input-button">
+        <br/>
+        <input type="button" id="id_<%- name %>" value="<%- value %>" class="btn" />
+    </script>
+
+</body>
+
+</html>

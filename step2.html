@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Backbone.js Form Step 2</title>
+</head>
+
+<body>
+
+    <div id="backbone-form-step2" class="container">
+        <div class="row">
+            <div class="col-xs-6">
+                <form id="form-vehicle-type" name="form-vehicle-type" method='GET' action="./step3.html">
+                    <div id="step2-vehicle-type">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <link rel="stylesheet" type="text/css" href="./css/main.css" />
+    <script src="./vendor/json2.js"></script>
+    <script src="./vendor/jquery-1.11.3.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <script src="./vendor/underscore.js"></script>
+    <script src="./vendor/backbone.js"></script>
+    <script src="step2.js"></script>
+
+    <!-- Templates -->
+
+    <script type="text/template" id="tpl-input-radio">
+            <label><%- name %></label><br/>
+            <input type="radio" id="id_<%- name %>" name="id_<%- name %>" value="<%- value %>" /><br/>
+    </script>
+
+    <script type="text/template" id="tpl-input-button">
+        <br/>
+        <input type="button" id="id_<%- name %>" value="<%- value %>" class="btn" />
+    </script>
+
+</body>
+
+</html>
