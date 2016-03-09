@@ -20,11 +20,11 @@
                         </div>
                         <!-- Outbound -->
                         <div id="step3-points-outbound" class="row" style="background-color: green;">
-                            <div id="points-time" class="col-xs-5">
+                            <div id="points-time-outbound" class="col-xs-5">
                             </div>
-                            <div id="points-trip-reference" class="col-xs-5">
+                            <div id="points-trip-reference-outbound" class="col-xs-5">
                             </div>
-                            <div id="points-is-roundtrip" class="col-xs-2">
+                            <div id="points-is-roundtrip-outbound" class="col-xs-2">
                             </div>
                         </div>
                         <!-- Outbound Extra Seats -->
@@ -45,23 +45,27 @@
                         </div>
 
                         <!-- Inbound -->
-                        <div id="step3-points-inbound">
-                            <div class="row" style="background-color: purple;">
-                                <div id="points-time-return" class="col-xs-5">
-                                </div>
-                                <div id="points-trip-reference-return" class="col-xs-5">
-                                </div>
+                        <div id="step3-points-inbound" class="row" style="background-color: purple;">
+                            <div id="points-time-inbound" class="col-xs-5">
                             </div>
-                            <div class="row" style="background-color: purple;">
-                                <div id="points-extra-seat-return" class="col-xs-5">
-                                </div>
+                            <div id="points-trip-reference-inbound" class="col-xs-5">
                             </div>
-                            <div class="row" style="background-color: purple;">
-                                <div id="points-extra-stop-return" class="col-xs-5">
-                                </div>
-                                <div id="points-extra-stop-location-return" class="col-xs-5">
-                                </div>
+                        </div>
+                        <!-- Inbound Extra Seats -->
+                        <div id="step3-points-inbound-seats" class="row" style="background-color: purple;">
+                            <div id="points-add-seat-inbound" class="col-xs-1">
                             </div>
+                            <div id="points-remove-seat-inbound" class="col-xs-1">
+                            </div>
+                        </div>
+                        <!-- Inbound Extra Stops -->
+                        <div id="step3-points-inbound-stops-buttons" class="row" style="background-color: purple;">
+                            <div id="points-add-stop-inbound" class="col-xs-1">
+                            </div>
+                            <div id="points-remove-stop-inbound" class="col-xs-1">
+                            </div>
+                        </div>
+                        <div id="step3-points-inbound-stops" class="row" style="background-color: purple;">
                         </div>
                     </div>
                 </form>
@@ -88,7 +92,7 @@
 
     <script type="text/template" id="tpl-input-text">
             <label><%- name %></label><br/>
-            <input type="text" id="id_<%- name %>" value="" class="form-control" />
+            <input type="text" id="id_<%- name %>" value="<%- value %>" class="form-control" />
     </script>
 
     <script type="text/template" id="tpl-input-datepicker">
@@ -106,7 +110,11 @@
             <select id="id_<%- name %>" class="form-control">
                 <option value="">---</option>
                 <% _.each(options, function(option) { %>
-                <option value="<%- option.id %>"><%- option.name %></option>
+                    <% if (option.id == value) { %>
+                        <option value="<%- option.id %>" selected><%- option.name %></option>
+                    <% } else { %>
+                        <option value="<%- option.id %>"><%- option.name %></option>
+                    <% } %>
                 <% }); %>
             </select>
     </script>
@@ -122,7 +130,11 @@
             <select id="id_<%- name %>" class="form-control">
                 <option value="">---</option>
                 <% _.each(options, function(option) { %>
-                <option value="<%- option.id %>"><%- option.name %></option>
+                    <% if (option.id == value) { %>
+                        <option value="<%- option.id %>" selected><%- option.name %></option>
+                    <% } else { %>
+                        <option value="<%- option.id %>"><%- option.name %></option>
+                    <% } %>
                 <% }); %>
             </select>
         </div>
@@ -131,7 +143,7 @@
     <script type="text/template" id="tpl-input-stop-address">
         <div class="col-xs-5">
             <label><%- name %></label><br/>
-            <input type="text" id="id_<%- name %>" value="" class="form-control" />
+            <input type="text" id="id_<%- name %>" value="<%- value %>" class="form-control" />
         </div>
     </script>
 
@@ -141,7 +153,11 @@
             <select id="id_<%- name %>" class="form-control">
                 <option value="">---</option>
                 <% _.each(options, function(option) { %>
-                <option value="<%- option.id %>"><%- option.name %></option>
+                    <% if (option.id == value) { %>
+                        <option value="<%- option.id %>" selected><%- option.name %></option>
+                    <% } else { %>
+                        <option value="<%- option.id %>"><%- option.name %></option>
+                    <% } %>
                 <% }); %>
             </select>
         </div>

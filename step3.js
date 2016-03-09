@@ -75,7 +75,7 @@ var extraStopField = new Field();
 extraStopField.set('id', 'id_extra_stop');
 extraStopField.set('name', 'extra_stop[]');
 extraStopField.set('type', 'select');
-extraStopField.set('validation', /[0-9]+/);
+extraStopField.set('validation', /[\w]+/);
 extraStopField.set('options', stops);
 
 var extraStopLocationField = new Field();
@@ -168,6 +168,7 @@ var FieldView = Backbone.View.extend({
         this.getInput().prop("disabled", false);
     },
     disable: function () {
+        console.log(this.getInput());
         this.getInput().prop("disabled", true);
     },
 });
@@ -327,9 +328,9 @@ var OutboundView = Backbone.View.extend({
     elExtraStops: $("#step3-points-outbound-stops"),
     fieldViews: {},
     initialize: function() {
-        this.fieldViews['time'] = new FieldTextView({id: timeField.get('name'), model: timeField, el: $("#points-time")});
-        this.fieldViews['tripReference'] = new FieldTextView({id: tripReferenceField.get('name'), model: tripReferenceField, el: $("#points-trip-reference")});
-        this.fieldViews['isRoundtrip'] = new FieldCheckboxView({id: isRoundtripField.get('name'), model: isRoundtripField, el: $("#points-is-roundtrip")});
+        this.fieldViews['time'] = new FieldTextView({id: timeField.get('name'), model: timeField, el: $("#points-time-outbound")});
+        this.fieldViews['tripReference'] = new FieldTextView({id: tripReferenceField.get('name'), model: tripReferenceField, el: $("#points-trip-reference-outbound")});
+        this.fieldViews['isRoundtrip'] = new FieldCheckboxView({id: isRoundtripField.get('name'), model: isRoundtripField, el: $("#points-is-roundtrip-outbound")});
 
         // childseats
         this.fieldViews['addSeatButton'] = new FieldButtonAddSeatView({id: addSeatButton.get('name'), model: addSeatButton, el: $("#points-add-seat-outbound")});
@@ -425,34 +426,140 @@ var OutboundView = Backbone.View.extend({
 
 var InboundView = Backbone.View.extend({
     el: $("#step3-points-inbound"),
+    elExtraSeats: $("#step3-points-inbound-seats"),
+    elExtraStops: $("#step3-points-inbound-stops-buttons"),
+    elExtraStops: $("#step3-points-inbound-stops"),
     fieldViews: {},
     initialize: function() {
-        this.fieldViews['timeReturn'] = new FieldTextView({id: timeReturnField.get('name'), model: timeReturnField, el: $("#points-time-return")});
-        this.fieldViews['tripReferenceReturn'] = new FieldTextView({id: tripReferenceReturnField.get('name'), model: tripReferenceReturnField, el: $("#points-trip-reference-return")});
-        this.fieldViews['extraSeatReturn'] = new FieldSelectView({id: extraSeatReturnField.get('name'), model: extraSeatReturnField, el: $("#points-extra-seat-return")});
-        this.fieldViews['extraStopReturn'] = new FieldTextView({id: extraStopReturnField.get('name'), model: extraStopReturnField, el: $("#points-extra-stop-return")});
-        this.fieldViews['extraStopLocationReturn'] = new FieldSelectView({id: extraStopLocationReturnField.get('name'), model: extraStopLocationReturnField, el: $("#points-extra-stop-location-return")});
+        this.fieldViews['time'] = new FieldTextView({id: timeReturnField.get('name'), model: timeField, el: $("#points-time-inbound")});
+        this.fieldViews['tripReference'] = new FieldTextView({id: tripReferenceReturnField.get('name'), model: tripReferenceField, el: $("#points-trip-reference-inbound")});
+
+        // childseats
+        this.fieldViews['addSeatButton'] = new FieldButtonAddSeatView({id: addSeatButton.get('name'), model: addSeatButton, el: $("#points-add-seat-inbound")});
+        this.fieldViews['removeSeatButton'] = new FieldButtonRemoveSeatView({id: removeSeatButton.get('name'), model: removeSeatButton, el: $("#points-remove-seat-inbound")});
+        this.fieldViews['extraSeats'] = [];
+
+        // stops
+        this.fieldViews['addStopButton'] = new FieldButtonAddStopView({id: addStopButton.get('name'), model: addStopButton, el: $("#points-add-stop-inbound")});
+        this.fieldViews['removeStopButton'] = new FieldButtonRemoveStopView({id: removeStopButton.get('name'), model: removeStopButton, el: $("#points-remove-stop-inbound")});
+        this.fieldViews['extraStops'] = [];
+
+        // events
+        this.listenTo(this.fieldViews['addSeatButton'], 'addSeat', function(){
+            this.addSeat();
+        });
+        this.listenTo(this.fieldViews['removeSeatButton'], 'removeSeat', function(){
+            this.removeSeat();
+        });
+        this.listenTo(this.fieldViews['addStopButton'], 'addStop', function(){
+            this.addStop();
+        });
+        this.listenTo(this.fieldViews['removeStopButton'], 'removeStop', function(){
+            this.removeStop();
+        });
         this.render();
     },
     render: function() {
-        this.fieldViews['timeReturn'].render();
-        this.fieldViews['tripReferenceReturn'].render();
-        this.fieldViews['extraSeatReturn'].render();
-        this.fieldViews['extraStopReturn'].render();
-        this.fieldViews['extraStopLocationReturn'].render();
+        this.fieldViews['time'].render();
+        this.fieldViews['tripReference'].render();
+
+        // childseats
+        for (var s in this.fieldViews['extraSeats']) {
+            this.elExtraSeats.append(this.fieldViews['extraSeats'][s].render().el);
+        }
+        this.fieldViews['addSeatButton'].render();
+        this.fieldViews['removeSeatButton'].render();
+
+        // stops
+        for (var s in this.fieldViews['extraStops']) {
+            this.elExtraStops.append(this.fieldViews['extraStops'][s]['address'].render().el);
+            this.elExtraStops.append(this.fieldViews['extraStops'][s]['location'].render().el);
+        }
+        this.fieldViews['addStopButton'].render();
+        this.fieldViews['removeStopButton'].render();
+
         return this;
     },
     disable: function() {
-        for (var fieldView in this.fieldViews) {
-            this.fieldViews[fieldView].disable();
+        this.fieldViews['time'].disable();
+        this.fieldViews['tripReference'].disable();
+
+        this.fieldViews['addSeatButton'].disable();
+        this.fieldViews['addSeatButton'].$el.hide();
+        this.fieldViews['removeSeatButton'].disable();
+        this.fieldViews['removeSeatButton'].$el.hide();
+        this.fieldViews['addStopButton'].disable();
+        this.fieldViews['addStopButton'].$el.hide();
+        this.fieldViews['removeStopButton'].disable();
+        this.fieldViews['removeStopButton'].$el.hide();
+
+        for (var fieldView in this.fieldViews['extraSeats']) {
+            this.fieldViews['extraSeats'][fieldView].disable();
+        }
+        for (var fieldView in this.fieldViews['extraStops']) {
+            this.fieldViews['extraStops'][fieldView]['address'].disable();
+            this.fieldViews['extraStops'][fieldView]['location'].disable();
         }
     },
     enable: function() {
-        for (var fieldView in this.fieldViews) {
-            this.fieldViews[fieldView].enable();
+        this.fieldViews['time'].enable();
+        this.fieldViews['tripReference'].enable();
+
+        this.fieldViews['addSeatButton'].enable();
+        this.fieldViews['addSeatButton'].$el.show();
+        this.fieldViews['removeSeatButton'].enable();
+        this.fieldViews['removeSeatButton'].$el.show();
+        this.fieldViews['addStopButton'].enable();
+        this.fieldViews['addStopButton'].$el.show();
+        this.fieldViews['removeStopButton'].enable();
+        this.fieldViews['removeStopButton'].$el.show();
+
+        for (var fieldView in this.fieldViews['extraSeats']) {
+            this.fieldViews['extraSeats'][fieldView].enable();
+            this.fieldViews['extraSeats'][fieldView].$el.show();
+        }
+        for (var fieldView in this.fieldViews['extraStops']) {
+            this.fieldViews['extraStops'][fieldView]['address'].enable();
+            this.fieldViews['extraStops'][fieldView]['address'].$el.show();
+            this.fieldViews['extraStops'][fieldView]['location'].enable();
+            this.fieldViews['extraStops'][fieldView]['location'].$el.show();
         }
     },
+    addSeat: function() {
+        if (this.fieldViews['extraSeats'].length > 3)
+            return this;
+        this.fieldViews['extraSeats'].push(new FieldSelectSeatView({id: extraSeatReturnField.get('name'), model: extraSeatReturnField, template: _.template($('#tpl-input-select-seats').html())}));
+        this.render();
+    },
+    removeSeat: function() {
+        if (this.fieldViews['extraSeats'].length < 2)
+            return this;
+        console.log('remove seat');
+        var view = this.fieldViews['extraSeats'].pop();
+        view.remove();
+        this.render();
+    },
+    addStop: function() {
+        console.log('add Stop');
+        if (this.fieldViews['extraStops'].length > 3)
+            return this;
+        this.fieldViews['extraStops'].push({
+            'address': new FieldStopAddressView({id: extraStopReturnField.get('name'), model: extraStopReturnField}),
+            'location': new FieldStopLocationView({id: extraStopLocationReturnField.get('name'), model: extraStopLocationReturnField}),
+        });
+        this.render();
+    },
+    removeStop: function() {
+        console.log('remove stops');
+        if (this.fieldViews['extraStops'].length < 2)
+            return this;
+        var stop = this.fieldViews['extraStops'].pop();
+        stop['address'].remove();
+        stop['location'].remove();
+        this.render();
+    },
 });
+
 
 var PointsView = Backbone.View.extend({
     el: $("#step3-points"),
