@@ -266,12 +266,10 @@ var FieldSelectSeatView = FieldSelectView.extend({
  * App views
  */
 
-// Row
 var AddressView = Backbone.View.extend({
     el: $("#step3-points-address"),
     fieldViews: {},
     initialize: function() {
-         // Each field view is a Column
         this.fieldViews['addressFrom'] = new FieldTextView({id: addressFromField.get('name'), model: addressFromField, el: $("#points-address-from")});
         this.fieldViews['addressTo'] = new FieldTextView({id: addressToField.get('name'), model: addressToField, el: $("#points-address-to")});
         this.render();
@@ -280,38 +278,29 @@ var AddressView = Backbone.View.extend({
         this.fieldViews['addressFrom'].render();
         this.fieldViews['addressTo'].render();
         return this;
-        /*
-        this.$el.append(this.fieldViews['addressFrom'].render().el);
-        this.$el.append(this.fieldViews['addressTo'].render().el);
-        return this;
-        */
     },
 });
 
 var OutboundView = Backbone.View.extend({
-    el: $("#step3-points-outbound"),
+    el: $("#step3-points-inbound"),
+    elExtraSeats: $("#step3-points-outbound-seats"),
     fieldViews: {},
     initialize: function() {
         this.fieldViews['time'] = new FieldTextView({id: timeField.get('name'), model: timeField, el: $("#points-time")});
         this.fieldViews['tripReference'] = new FieldTextView({id: tripReferenceField.get('name'), model: tripReferenceField, el: $("#points-trip-reference")});
         this.fieldViews['isRoundtrip'] = new FieldCheckboxView({id: isRoundtripField.get('name'), model: isRoundtripField, el: $("#points-is-roundtrip")});
-        this.render();
-    },
-    render: function() {
-        this.fieldViews['time'].render();
-        this.fieldViews['tripReference'].render();
-        this.fieldViews['isRoundtrip'].render();
-        return this;
-    },
-});
 
-var OutboundExtraSeatsView = Backbone.View.extend({
-    el: $("#step3-points-outbound-seats"),
-    fieldViews: {},
-    initialize: function() {
+        // childseats
         this.fieldViews['addSeatButton'] = new FieldButtonAddSeatView({id: addSeatButton.get('name'), model: addSeatButton, el: $("#points-add-seat-outbound")});
         this.fieldViews['removeSeatButton'] = new FieldButtonRemoveSeatView({id: removeSeatButton.get('name'), model: removeSeatButton, el: $("#points-remove-seat-outbound")});
         this.fieldViews['extraSeats'] = [];
+        this.fieldViews['extraSeat'] = new FieldSelectView({id: extraSeatField.get('name'), model: extraSeatField, el: $("#points-extra-seat")});
+
+        // stops
+        this.fieldViews['extraStop'] = new FieldTextView({id: extraStopField.get('name'), model: extraStopField, el: $("#points-extra-stop")});
+        this.fieldViews['extraStopLocation'] = new FieldSelectView({id: extraStopLocationField.get('name'), model: extraStopLocationField, el: $("#points-extra-stop-location")});
+
+        // events
         this.listenTo(this.fieldViews['addSeatButton'], 'addSeat', function(){
             this.addSeat();
         });
@@ -321,14 +310,32 @@ var OutboundExtraSeatsView = Backbone.View.extend({
         this.render();
     },
     render: function() {
-        this.$el.find('input').remove();
-        this.$el.find('select').remove();
+        this.fieldViews['time'].render();
+        this.fieldViews['tripReference'].render();
+        this.fieldViews['isRoundtrip'].render();
+
+        // childseats
         for (var s in this.fieldViews['extraSeats']) {
-            this.$el.append(this.fieldViews['extraSeats'][s].render().el);
+            this.elExtraSeats.append(this.fieldViews['extraSeats'][s].render().el);
         }
         this.fieldViews['addSeatButton'].render();
         this.fieldViews['removeSeatButton'].render();
+
+        // stops
+        this.fieldViews['extraStop'].render();
+        this.fieldViews['extraStopLocation'].render();
+
         return this;
+    },
+    disable: function() {
+        for (var fieldView in this.fieldViews) {
+            this.fieldViews[fieldView].disable();
+        }
+    },
+    enable: function() {
+        for (var fieldView in this.fieldViews) {
+            this.fieldViews[fieldView].enable();
+        }
     },
     addSeat: function() {
         if (this.fieldViews['extraSeats'].length > 3)
@@ -343,21 +350,6 @@ var OutboundExtraSeatsView = Backbone.View.extend({
         var view = this.fieldViews['extraSeats'].pop();
         view.remove();
         this.render();
-    },
-});
-
-var OutboundExtraStopsView = Backbone.View.extend({
-    el: $("#step3-points-outbound-stops"),
-    fieldViews: {},
-    initialize: function() {
-        this.fieldViews['extraStop'] = new FieldTextView({id: extraStopField.get('name'), model: extraStopField, el: $("#points-extra-stop")});
-        this.fieldViews['extraStopLocation'] = new FieldSelectView({id: extraStopLocationField.get('name'), model: extraStopLocationField, el: $("#points-extra-stop-location")});
-        this.render();
-    },
-    render: function() {
-        this.fieldViews['extraStop'].render();
-        this.fieldViews['extraStopLocation'].render();
-        return this;
     },
 });
 
@@ -398,8 +390,6 @@ var PointsView = Backbone.View.extend({
     initialize: function() {
         this.fieldViews['address'] = new AddressView,
         this.fieldViews['outbound'] = new OutboundView,
-        this.fieldViews['extraSeats'] = new OutboundExtraSeatsView,
-        this.fieldViews['extraStops'] = new OutboundExtraStopsView,
         this.fieldViews['inbound'] = new InboundView,
 
         this.fieldViews['pointsButton'] = new FieldButtonSubmitView({id: pointsButton.get('name'), model: pointsButton});
@@ -419,8 +409,6 @@ var PointsView = Backbone.View.extend({
     render: function() {
         this.fieldViews['address'].render();
         this.fieldViews['outbound'].render();
-        this.fieldViews['extraSeats'].render();
-        this.fieldViews['extraStops'].render();
         this.fieldViews['inbound'].render();
         this.$el.append(this.fieldViews['pointsButton'].render().el);
         // initially disabled
