@@ -136,6 +136,18 @@ removeSeatButton.set('name', 'remove_seat_button');
 removeSeatButton.set('type', 'button');
 removeSeatButton.set('value', 'Remove Seat');
 
+var addStopButton = new Field();
+addStopButton.set('id', 'id_add_stop_button');
+addStopButton.set('name', 'add_stop_button');
+addStopButton.set('type', 'button');
+addStopButton.set('value', 'Add Stop');
+
+var removeStopButton = new Field();
+removeStopButton.set('id', 'id_remove_stop_button');
+removeStopButton.set('name', 'remove_stop_button');
+removeStopButton.set('type', 'button');
+removeStopButton.set('value', 'Remove Stop');
+
 // base View
 var FieldView = Backbone.View.extend({
     tagName: 'div',
@@ -261,6 +273,33 @@ var FieldSelectSeatView = FieldSelectView.extend({
     template: _.template($('#tpl-input-select-seats').html()),
 });
 
+var FieldButtonAddStopView = FieldButtonView.extend({
+    // override events
+    events: {
+        "click": "addStop",
+    },
+    addStop: function () {
+        this.trigger('addStop');
+    },
+});
+
+var FieldButtonRemoveStopView = FieldButtonView.extend({
+    // override events
+    events: {
+        "click": "removeStop",
+    },
+    removeStop: function () {
+        this.trigger('removeStop');
+    },
+});
+
+var FieldStopAddressView = FieldTextView.extend({
+    template: _.template($('#tpl-input-stop-address').html()),
+});
+
+var FieldStopLocationView = FieldSelectView.extend({
+    template: _.template($('#tpl-input-stop-location').html()),
+});
 
 /*
  * App views
@@ -284,6 +323,8 @@ var AddressView = Backbone.View.extend({
 var OutboundView = Backbone.View.extend({
     el: $("#step3-points-inbound"),
     elExtraSeats: $("#step3-points-outbound-seats"),
+    elExtraStops: $("#step3-points-outbound-stops-buttons"),
+    elExtraStops: $("#step3-points-outbound-stops"),
     fieldViews: {},
     initialize: function() {
         this.fieldViews['time'] = new FieldTextView({id: timeField.get('name'), model: timeField, el: $("#points-time")});
@@ -294,11 +335,11 @@ var OutboundView = Backbone.View.extend({
         this.fieldViews['addSeatButton'] = new FieldButtonAddSeatView({id: addSeatButton.get('name'), model: addSeatButton, el: $("#points-add-seat-outbound")});
         this.fieldViews['removeSeatButton'] = new FieldButtonRemoveSeatView({id: removeSeatButton.get('name'), model: removeSeatButton, el: $("#points-remove-seat-outbound")});
         this.fieldViews['extraSeats'] = [];
-        this.fieldViews['extraSeat'] = new FieldSelectView({id: extraSeatField.get('name'), model: extraSeatField, el: $("#points-extra-seat")});
 
         // stops
-        this.fieldViews['extraStop'] = new FieldTextView({id: extraStopField.get('name'), model: extraStopField, el: $("#points-extra-stop")});
-        this.fieldViews['extraStopLocation'] = new FieldSelectView({id: extraStopLocationField.get('name'), model: extraStopLocationField, el: $("#points-extra-stop-location")});
+        this.fieldViews['addStopButton'] = new FieldButtonAddStopView({id: addStopButton.get('name'), model: addStopButton, el: $("#points-add-stop-outbound")});
+        this.fieldViews['removeStopButton'] = new FieldButtonRemoveStopView({id: removeStopButton.get('name'), model: removeStopButton, el: $("#points-remove-stop-outbound")});
+        this.fieldViews['extraStops'] = [];
 
         // events
         this.listenTo(this.fieldViews['addSeatButton'], 'addSeat', function(){
@@ -306,6 +347,12 @@ var OutboundView = Backbone.View.extend({
         });
         this.listenTo(this.fieldViews['removeSeatButton'], 'removeSeat', function(){
             this.removeSeat();
+        });
+        this.listenTo(this.fieldViews['addStopButton'], 'addStop', function(){
+            this.addStop();
+        });
+        this.listenTo(this.fieldViews['removeStopButton'], 'removeStop', function(){
+            this.removeStop();
         });
         this.render();
     },
@@ -322,8 +369,12 @@ var OutboundView = Backbone.View.extend({
         this.fieldViews['removeSeatButton'].render();
 
         // stops
-        this.fieldViews['extraStop'].render();
-        this.fieldViews['extraStopLocation'].render();
+        for (var s in this.fieldViews['extraStops']) {
+            this.elExtraStops.append(this.fieldViews['extraStops'][s]['address'].render().el);
+            this.elExtraStops.append(this.fieldViews['extraStops'][s]['location'].render().el);
+        }
+        this.fieldViews['addStopButton'].render();
+        this.fieldViews['removeStopButton'].render();
 
         return this;
     },
@@ -349,6 +400,25 @@ var OutboundView = Backbone.View.extend({
         console.log('remove seat');
         var view = this.fieldViews['extraSeats'].pop();
         view.remove();
+        this.render();
+    },
+    addStop: function() {
+        console.log('add Stop');
+        if (this.fieldViews['extraStops'].length > 3)
+            return this;
+        this.fieldViews['extraStops'].push({
+            'address': new FieldStopAddressView({id: extraStopField.get('name'), model: extraStopField}),
+            'location': new FieldStopLocationView({id: extraStopLocationField.get('name'), model: extraStopLocationField}),
+        });
+        this.render();
+    },
+    removeStop: function() {
+        console.log('remove stops');
+        if (this.fieldViews['extraStops'].length < 2)
+            return this;
+        var stop = this.fieldViews['extraStops'].pop();
+        stop['address'].remove();
+        stop['location'].remove();
         this.render();
     },
 });

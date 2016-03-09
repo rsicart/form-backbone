@@ -35,11 +35,13 @@
                             </div>
                         </div>
                         <!-- Outbound Extra Stops -->
+                        <div id="step3-points-outbound-stops-buttons" class="row" style="background-color: green;">
+                            <div id="points-add-stop-outbound" class="col-xs-1">
+                            </div>
+                            <div id="points-remove-stop-outbound" class="col-xs-1">
+                            </div>
+                        </div>
                         <div id="step3-points-outbound-stops" class="row" style="background-color: green;">
-                            <div id="points-extra-stop" class="col-xs-5">
-                            </div>
-                            <div id="points-extra-stop-location" class="col-xs-5">
-                            </div>
                         </div>
 
                         <!-- Inbound -->
@@ -116,6 +118,25 @@
 
     <script type="text/template" id="tpl-input-select-seats">
         <div class="col-xs-2">
+            <label><%- name %></label><br/>
+            <select id="id_<%- name %>" class="form-control">
+                <option value="">---</option>
+                <% _.each(options, function(option) { %>
+                <option value="<%- option.id %>"><%- option.name %></option>
+                <% }); %>
+            </select>
+        </div>
+    </script>
+
+    <script type="text/template" id="tpl-input-stop-address">
+        <div class="col-xs-5">
+            <label><%- name %></label><br/>
+            <input type="text" id="id_<%- name %>" value="" class="form-control" />
+        </div>
+    </script>
+
+    <script type="text/template" id="tpl-input-stop-location">
+        <div class="col-xs-5">
             <label><%- name %></label><br/>
             <select id="id_<%- name %>" class="form-control">
                 <option value="">---</option>
