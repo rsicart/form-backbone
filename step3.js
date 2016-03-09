@@ -64,13 +64,6 @@ tripReferenceField.set('name', 'id_trip_reference');
 tripReferenceField.set('type', 'checkbox');
 tripReferenceField.set('validation', /[\w]+/);
 
-var extraSeatField = new Field();
-extraSeatField.set('id', 'id_extra_seat');
-extraSeatField.set('name', 'extra_seat[]');
-extraSeatField.set('type', 'select');
-extraSeatField.set('validation', /[0-9]+/);
-extraSeatField.set('options', seats);
-
 var extraStopField = new Field();
 extraStopField.set('id', 'id_extra_stop');
 extraStopField.set('name', 'extra_stop[]');
@@ -148,6 +141,25 @@ removeStopButton.set('name', 'remove_stop_button');
 removeStopButton.set('type', 'button');
 removeStopButton.set('value', 'Remove Stop');
 
+// collections
+var ExtraSeatCollection = Backbone.Collection.extend({
+    model: Field,
+});
+var ExtraSeats = new ExtraSeatCollection();
+var ExtraSeatsReturn = new ExtraSeatCollection();
+
+var ExtraStopAddressCollection = Backbone.Collection.extend({
+    model: Field,
+});
+var ExtraStopAddress = new ExtraStopAddressCollection();
+var ExtraStopAddressReturn = new ExtraStopAddressCollection();
+
+var ExtraStopLocationCollection = Backbone.Collection.extend({
+    model: Field,
+});
+var ExtraStopLocation = new ExtraStopLocationCollection();
+var ExtraStopLocationReturn = new ExtraStopLocationCollection();
+
 // base View
 var FieldView = Backbone.View.extend({
     tagName: 'div',
@@ -168,7 +180,6 @@ var FieldView = Backbone.View.extend({
         this.getInput().prop("disabled", false);
     },
     disable: function () {
-        console.log(this.getInput());
         this.getInput().prop("disabled", true);
     },
 });
@@ -322,7 +333,7 @@ var AddressView = Backbone.View.extend({
 });
 
 var OutboundView = Backbone.View.extend({
-    el: $("#step3-points-inbound"),
+    el: $("#step3-points-outbound"),
     elExtraSeats: $("#step3-points-outbound-seats"),
     elExtraStops: $("#step3-points-outbound-stops-buttons"),
     elExtraStops: $("#step3-points-outbound-stops"),
@@ -392,7 +403,16 @@ var OutboundView = Backbone.View.extend({
     addSeat: function() {
         if (this.fieldViews['extraSeats'].length > 3)
             return this;
-        this.fieldViews['extraSeats'].push(new FieldSelectSeatView({id: extraSeatField.get('name'), model: extraSeatField, template: _.template($('#tpl-input-select-seats').html())}));
+
+        var seat = new Field();
+        seat.set('id', 'id_extra_seat');
+        seat.set('name', 'extra_seat[]');
+        seat.set('type', 'select');
+        seat.set('validation', /[0-9]+/);
+        seat.set('options', seats);
+        ExtraSeats.add(seat);
+
+        this.fieldViews['extraSeats'].push(new FieldSelectSeatView({id: seat.get('name'), model: seat, template: _.template($('#tpl-input-select-seats').html())}));
         this.render();
     },
     removeSeat: function() {
@@ -400,6 +420,7 @@ var OutboundView = Backbone.View.extend({
             return this;
         console.log('remove seat');
         var view = this.fieldViews['extraSeats'].pop();
+        ExtraSeats.remove(view.model);
         view.remove();
         this.render();
     },
@@ -407,9 +428,24 @@ var OutboundView = Backbone.View.extend({
         console.log('add Stop');
         if (this.fieldViews['extraStops'].length > 3)
             return this;
+        var address = new Field();
+        address.set('id', 'id_extra_stop_address');
+        address.set('name', 'extra_stop_address[]');
+        address.set('type', 'text');
+        address.set('validation', /[\w]+/);
+        ExtraStopAddress.add(address);
+
+        var location = new Field();
+        location.set('id', 'id_extra_stop_location');
+        location.set('name', 'extra_stop_location[]');
+        location.set('type', 'select');
+        location.set('validation', /[0-9]+/);
+        location.set('options', cities);
+        ExtraStopLocation.add(location);
+
         this.fieldViews['extraStops'].push({
-            'address': new FieldStopAddressView({id: extraStopField.get('name'), model: extraStopField}),
-            'location': new FieldStopLocationView({id: extraStopLocationField.get('name'), model: extraStopLocationField}),
+            'address': new FieldStopAddressView({id: address.get('name'), model: address}),
+            'location': new FieldStopLocationView({id: location.get('name'), model: location}),
         });
         this.render();
     },
@@ -418,7 +454,9 @@ var OutboundView = Backbone.View.extend({
         if (this.fieldViews['extraStops'].length < 2)
             return this;
         var stop = this.fieldViews['extraStops'].pop();
+        ExtraStopLocation.remove(stop['address'].model);
         stop['address'].remove();
+        ExtraStopLocation.remove(stop['location'].model);
         stop['location'].remove();
         this.render();
     },
@@ -528,7 +566,16 @@ var InboundView = Backbone.View.extend({
     addSeat: function() {
         if (this.fieldViews['extraSeats'].length > 3)
             return this;
-        this.fieldViews['extraSeats'].push(new FieldSelectSeatView({id: extraSeatReturnField.get('name'), model: extraSeatReturnField, template: _.template($('#tpl-input-select-seats').html())}));
+
+        var seat = new Field();
+        seat.set('id', 'id_extra_seat');
+        seat.set('name', 'extra_seat[]');
+        seat.set('type', 'select');
+        seat.set('validation', /[0-9]+/);
+        seat.set('options', seats);
+        ExtraSeatsReturn.add(seat);
+
+        this.fieldViews['extraSeats'].push(new FieldSelectSeatView({id: seat.get('name'), model: seat, template: _.template($('#tpl-input-select-seats').html())}));
         this.render();
     },
     removeSeat: function() {
@@ -536,6 +583,7 @@ var InboundView = Backbone.View.extend({
             return this;
         console.log('remove seat');
         var view = this.fieldViews['extraSeats'].pop();
+        ExtraSeatsReturn.remove(view.model);
         view.remove();
         this.render();
     },
@@ -543,9 +591,24 @@ var InboundView = Backbone.View.extend({
         console.log('add Stop');
         if (this.fieldViews['extraStops'].length > 3)
             return this;
+        var address = new Field();
+        address.set('id', 'id_extra_stop_address');
+        address.set('name', 'extra_stop_address[]');
+        address.set('type', 'text');
+        address.set('validation', /[\w]+/);
+        ExtraStopAddressReturn.add(address);
+
+        var location = new Field();
+        location.set('id', 'id_extra_stop_location');
+        location.set('name', 'extra_stop_location[]');
+        location.set('type', 'select');
+        location.set('validation', /[0-9]+/);
+        location.set('options', cities);
+        ExtraStopLocationReturn.add(location);
+
         this.fieldViews['extraStops'].push({
-            'address': new FieldStopAddressView({id: extraStopReturnField.get('name'), model: extraStopReturnField}),
-            'location': new FieldStopLocationView({id: extraStopLocationReturnField.get('name'), model: extraStopLocationReturnField}),
+            'address': new FieldStopAddressView({id: address.get('name'), model: address}),
+            'location': new FieldStopLocationView({id: location.get('name'), model: location}),
         });
         this.render();
     },
@@ -554,7 +617,9 @@ var InboundView = Backbone.View.extend({
         if (this.fieldViews['extraStops'].length < 2)
             return this;
         var stop = this.fieldViews['extraStops'].pop();
+        ExtraStopAddressReturn.remove(stop['address'].model);
         stop['address'].remove();
+        ExtraStopLocationReturn.remove(stop['location'].model);
         stop['location'].remove();
         this.render();
     },
