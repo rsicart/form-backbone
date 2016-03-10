@@ -160,6 +160,18 @@ var ExtraStopLocationCollection = Backbone.Collection.extend({
 var ExtraStopLocation = new ExtraStopLocationCollection();
 var ExtraStopLocationReturn = new ExtraStopLocationCollection();
 
+var AllFieldsCollection = Backbone.Collection.extend({
+    model: Field,
+});
+var AllFields = new AllFieldsCollection();
+AllFields.add([
+        addressFromField,
+        addressToField,
+        timeField,
+        tripReferenceField,
+        isRoundtripField,
+]);
+
 // base View
 var FieldView = Backbone.View.extend({
     tagName: 'div',
@@ -641,11 +653,20 @@ var PointsView = Backbone.View.extend({
             if (this.fieldViews['outbound'].fieldViews['isRoundtrip'].model.get('value') === false) {
                 this.fieldViews['inbound'].disable();
                 this.fieldViews['inbound'].$el.hide();
+                AllFields.remove([
+                    timeReturnField,
+                    tripReferenceReturnField,
+                ]);
             } else {
                 this.fieldViews['inbound'].enable();
                 this.fieldViews['inbound'].$el.show();
+                AllFields.add([
+                    timeReturnField,
+                    tripReferenceReturnField,
+                ]);
             }
         });
+        this.listenTo(AllFields, 'change', this.validateAll);
         this.render();
     },
     render: function() {
@@ -658,6 +679,22 @@ var PointsView = Backbone.View.extend({
         this.fieldViews['inbound'].$el.hide();
         this.fieldViews['pointsButton'].disable();
         return this;
+    },
+    validateAll: function() {
+        console.log('validateAll');
+        console.log(AllFields.length);
+        var isValid = true;
+        AllFields.each(function(field) {
+            if (field != isRoundtripField)
+                isValid = isValid && field.isValid();
+        });
+        if (!isValid) {
+            this.fieldViews['pointsButton'].disable();
+            return isValid;
+        }
+        console.log(isValid);
+        this.fieldViews['pointsButton'].enable();
+        return isValid;
     },
 });
 
