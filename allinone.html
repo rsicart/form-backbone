@@ -1,0 +1,80 @@
+<html>
+
+<head>
+</head>
+
+<body>
+
+    <div id="step1">
+
+        <div class="row">
+            <div class="col-xs-6">
+                <div id="locations-view">
+                    <div id="location-from-view">
+                    </div>
+                    <div id="location-to-view">
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div id="exclusive-location-duration-view">
+                    <div id="exclusive-location-view">
+                    </div>
+                    <div id="exclusive-duration-view">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="step2">
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="vehicles-view">
+                    <div id="vehicle-view">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- templates -->
+
+    <script type="text/template" id="tpl-select">
+        <label><%- name %></label><br/>
+        <select id="id_<%- name %>">
+            <option value="">---</option>
+            <% _.each(options, function(option) { %>
+            <option value="<%- option.value %>"><%- option.label %></option>
+            <% }); %>
+        </select>
+    </script>
+
+    <script type="text/template" id="tpl-button">
+        <br/>
+        <input type="button" id="id_<%- name %>" value="<%- value %>" class="btn" />
+    </script>
+
+    <script type="text/template" id="tpl-radio">
+        <% _.each(options, function(option) { %>
+        <label><%= option.label %></label><br/>
+        <input type="radio" name="<%= name %>" value="<%= option.value %>" /><br/>
+        <% }); %>
+    </script>
+
+    <script src="./vendor/jquery-1.11.3.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="./vendor/underscore.js"></script>
+    <script src="./vendor/backbone.js"></script>
+    <script src="allinone.js"></script>
+
+
+
+</body>
+
+</html>
