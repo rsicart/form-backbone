@@ -1,0 +1,41 @@
+<html>
+
+<head>
+</head>
+
+<body>
+
+    <div id="locations-view">
+        <div id="location-from-view">
+        </div>
+        <div id="location-to-view">
+        </div>
+    </div>
+
+    <!-- templates -->
+
+    <script type="text/template" id="tpl-select">
+        <label><%- name %></label><br/>
+        <select id="id_<%- name %>">
+            <option value="">---</option>
+            <% _.each(options, function(option) { %>
+            <option value="<%- option.value %>"><%- option.label %></option>
+            <% }); %>
+        </select>
+    </script>
+
+    <script type="text/template" id="tpl-button">
+        <br/>
+        <input type="button" id="id_<%- name %>" value="<%- value %>" class="btn" />
+    </script>
+
+    <script src="./vendor/jquery-1.11.3.js"></script>
+    <script src="./vendor/underscore.js"></script>
+    <script src="./vendor/backbone.js"></script>
+    <script src="selects.js"></script>
+
+
+
+</body>
+
+</html>
